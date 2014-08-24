@@ -1,0 +1,7 @@
+---
+title: "Exercise Manner Prediction"
+author: "Mengyu Zhou"
+date: "2014-08-24"
+output: html_document
+---
+
