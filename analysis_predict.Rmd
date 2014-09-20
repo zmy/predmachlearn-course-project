@@ -5,3 +5,90 @@ date: "2014-08-24"
 output: html_document
 ---
 
+In this document, we'll try to analysis the data from <http://groupware.les.inf.puc-rio.br/har>, and build models to predict human exercise manners.
+```{r cache=TRUE, prompt=FALSE}
+training <- read.csv("pml-training.csv", na.strings=c("","NA"))
+testing <- read.csv("pml-testing.csv")
+```
+
+
+## Data Cleaning and Exploration
+Firstly, we can easily see that there are a lot of missing values (`NA`) in the data. And there are same amounts of missing values occur in a few columns:
+```{r}
+apply(training, MARGIN=2, FUN=function(col) {
+    sum(is.na(col))
+})
+```
+We can check that the missing values appears on exactly same data points (rows) in all these columns:
+```{r}
+sum(!complete.cases(training))
+```
+So let's remove all these columns - since there are only `r sum(complete.cases(training))` out of `r sum(!complete.cases(training))` rows having values on these columns.
+
+And after a closer look at the variables, we notice that there are only few non-numeric columns. In order to get rid of the irrelavant `X` and time varialbes, we also delete corresponding columns.
+```{r cache=TRUE}
+useful <- apply(training, MARGIN=2, FUN=function(col){sum(is.na(col))==0})
+useful[c(1,3:5)] <- FALSE
+nRow <- nrow(training)
+nVar <- sum(useful)
+training <- training[, useful]
+testing <- testing[, useful]
+```
+Now there are only `r nVar-1` columns left for prediction. Notice that the last column of `training` is `classe` variable while that of `testing` is `problem_id`, which is the only difference.
+
+
+## Training and Testing
+```{r prompt=FALSE, message=FALSE}
+library(caret)
+set.seed(23)
+```
+
+### Linear Model
+Let's quickly try a linear regression (use 60% of samples as training data):
+```{r}
+trainIdx <- createDataPartition(training$classe, p=0.6, list=FALSE)
+trainData <- training[trainIdx,]
+validData <- training[-trainIdx,]
+linearFit = lm(as.numeric(classe)~., data=trainData)
+```
+And then in-sample testing:
+```{r}
+summary(linearFit)
+missing <- sum(round(predict(linearFit, validData)) != as.numeric(validData$classe))
+print(paste0("Accuracy: ",missing,"/",nrow(validData),"=",missing/nrow(validData)))
+```
+
+### GBM Model
+However, we can have a much better method (though runs slower) to build our model: gradient boosting machine (GBM) using the `train` function from caret.
+```{r cache=TRUE, prompt=FALSE}
+fitControl <- trainControl(## 10-fold CV
+                           method = "repeatedcv",
+                           number = 10,
+                           ## repeated 10 times
+                           repeats = 10)
+gbmFit = train(classe ~ ., method="gbm", data=trainData, trControl=fitControl, verbose=FALSE)
+```
+Here the `fitControl` parameter allows to completely define the way the model parameters will be tuned. The model parameters of the GBM (namely `interaction.depth`, `n.trees` and `shrinkage` which are usually contained in `tuneGrid` parameter of `train` function) were compared using a repeated 10-fold cross validation with accuracy being the metric for comparison.
+
+Following is the result model. (It is also interesting to see the variable importance using `summary(gbmFit)`. But for the sake of space we do not show it here.)
+```{r}
+gbmFit
+```
+Then in-sample testing:
+```{r}
+missing <- sum(predict(linearFit, validData) != validData$classe)
+print(paste0("Accuracy: ",missing,"/",nrow(validData),"=",missing/nrow(validData)))
+```
+
+### Result
+Higher accuracy lead to choose GBM rather than linear regression - we can hope that GBM model will have a smaller out-of-sample error. And the following code generates files for submission:
+```
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+pml_write_files(predict(gbmFit, testing))
+```
