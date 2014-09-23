@@ -279,9 +279,9 @@ linearFit = lm(as.numeric(classe)~., data=trainData)</code></pre>
 ## Residual standard error: 0.948 on 11716 degrees of freedom
 ## Multiple R-squared:  0.59,   Adjusted R-squared:  0.588 
 ## F-statistic:  285 on 59 and 11716 DF,  p-value: &lt;2e-16</code></pre>
-<pre class="r"><code>missing &lt;- sum(round(predict(linearFit, validData)) != as.numeric(validData$classe))
-print(paste0(&quot;Accuracy: &quot;,missing,&quot;/&quot;,nrow(validData),&quot;=&quot;,missing/nrow(validData)))</code></pre>
-<pre><code>## [1] &quot;Accuracy: 4775/7846=0.608590364516951&quot;</code></pre>
+<pre class="r"><code>hit &lt;- sum(round(predict(linearFit, validData)) == as.numeric(validData$classe))
+print(paste0(&quot;Accuracy: &quot;,hit,&quot;/&quot;,nrow(validData),&quot;=&quot;,hit/nrow(validData)))</code></pre>
+<pre><code>## [1] &quot;Accuracy: 3071/7846=0.391409635483049&quot;</code></pre>
 </div>
 <div id="gbm-model" class="section level3">
 <h3>GBM Model</h3>
@@ -337,9 +337,22 @@ gbmFit = train(classe ~ ., method=&quot;gbm&quot;, data=trainData, trControl=fit
 ## The final values used for the model were n.trees = 150,
 ##  interaction.depth = 3 and shrinkage = 0.1.</code></pre>
 <p>Then in-sample testing:</p>
-<pre class="r"><code>missing &lt;- sum(predict(linearFit, validData) != validData$classe)
-print(paste0(&quot;Accuracy: &quot;,missing,&quot;/&quot;,nrow(validData),&quot;=&quot;,missing/nrow(validData)))</code></pre>
-<pre><code>## [1] &quot;Accuracy: 7846/7846=1&quot;</code></pre>
+<pre class="r"><code>hit &lt;- sum(predict(gbmFit, validData) == validData$classe)</code></pre>
+<pre><code>## Loading required package: gbm
+## Loading required package: survival
+## Loading required package: splines
+## 
+## Attaching package: 'survival'
+## 
+## The following object is masked from 'package:caret':
+## 
+##     cluster
+## 
+## Loading required package: parallel
+## Loaded gbm 2.1
+## Loading required package: plyr</code></pre>
+<pre class="r"><code>print(paste0(&quot;Accuracy: &quot;,hit,&quot;/&quot;,nrow(validData),&quot;=&quot;,hit/nrow(validData)))</code></pre>
+<pre><code>## [1] &quot;Accuracy: 7747/7846=0.987382105531481&quot;</code></pre>
 </div>
 <div id="result" class="section level3">
 <h3>Result</h3>

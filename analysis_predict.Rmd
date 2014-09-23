@@ -54,8 +54,8 @@ linearFit = lm(as.numeric(classe)~., data=trainData)
 And then in-sample testing:
 ```{r}
 summary(linearFit)
-missing <- sum(round(predict(linearFit, validData)) != as.numeric(validData$classe))
-print(paste0("Accuracy: ",missing,"/",nrow(validData),"=",missing/nrow(validData)))
+hit <- sum(round(predict(linearFit, validData)) == as.numeric(validData$classe))
+print(paste0("Accuracy: ",hit,"/",nrow(validData),"=",hit/nrow(validData)))
 ```
 
 ### GBM Model
@@ -76,8 +76,8 @@ gbmFit
 ```
 Then in-sample testing:
 ```{r}
-missing <- sum(predict(linearFit, validData) != validData$classe)
-print(paste0("Accuracy: ",missing,"/",nrow(validData),"=",missing/nrow(validData)))
+hit <- sum(predict(gbmFit, validData) == validData$classe)
+print(paste0("Accuracy: ",hit,"/",nrow(validData),"=",hit/nrow(validData)))
 ```
 
 ### Result
