@@ -337,21 +337,8 @@ gbmFit = train(classe ~ ., method=&quot;gbm&quot;, data=trainData, trControl=fit
 ## The final values used for the model were n.trees = 150,
 ##  interaction.depth = 3 and shrinkage = 0.1.</code></pre>
 <p>Then in-sample testing:</p>
-<pre class="r"><code>hit &lt;- sum(predict(gbmFit, validData) == validData$classe)</code></pre>
-<pre><code>## Loading required package: gbm
-## Loading required package: survival
-## Loading required package: splines
-## 
-## Attaching package: 'survival'
-## 
-## The following object is masked from 'package:caret':
-## 
-##     cluster
-## 
-## Loading required package: parallel
-## Loaded gbm 2.1
-## Loading required package: plyr</code></pre>
-<pre class="r"><code>print(paste0(&quot;Accuracy: &quot;,hit,&quot;/&quot;,nrow(validData),&quot;=&quot;,hit/nrow(validData)))</code></pre>
+<pre class="r"><code>hit &lt;- sum(predict(gbmFit, validData) == validData$classe)
+print(paste0(&quot;Accuracy: &quot;,hit,&quot;/&quot;,nrow(validData),&quot;=&quot;,hit/nrow(validData)))</code></pre>
 <pre><code>## [1] &quot;Accuracy: 7747/7846=0.987382105531481&quot;</code></pre>
 </div>
 <div id="result" class="section level3">

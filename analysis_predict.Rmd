@@ -75,7 +75,7 @@ Following is the result model. (It is also interesting to see the variable impor
 gbmFit
 ```
 Then in-sample testing:
-```{r}
+```{r message=FALSE}
 hit <- sum(predict(gbmFit, validData) == validData$classe)
 print(paste0("Accuracy: ",hit,"/",nrow(validData),"=",hit/nrow(validData)))
 ```
