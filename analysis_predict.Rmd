@@ -60,7 +60,7 @@ print(paste0("Accuracy: ",hit,"/",nrow(validData),"=",hit/nrow(validData)))
 
 ### GBM Model
 However, we can have a much better method (though runs slower) to build our model: gradient boosting machine (GBM) using the `train` function from caret.
-```{r cache=TRUE, prompt=FALSE}
+```{r cache=TRUE, prompt=FALSE, message=FALSE}
 fitControl <- trainControl(## 10-fold CV
                            method = "repeatedcv",
                            number = 10,

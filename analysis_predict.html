@@ -292,19 +292,6 @@ print(paste0(&quot;Accuracy: &quot;,hit,&quot;/&quot;,nrow(validData),&quot;=&qu
                            ## repeated 10 times
                            repeats = 10)
 gbmFit = train(classe ~ ., method=&quot;gbm&quot;, data=trainData, trControl=fitControl, verbose=FALSE)</code></pre>
-<pre><code>## Loading required package: gbm
-## Loading required package: survival
-## Loading required package: splines
-## 
-## Attaching package: 'survival'
-## 
-## The following object is masked from 'package:caret':
-## 
-##     cluster
-## 
-## Loading required package: parallel
-## Loaded gbm 2.1
-## Loading required package: plyr</code></pre>
 <p>Here the <code>fitControl</code> parameter allows to completely define the way the model parameters will be tuned. The model parameters of the GBM (namely <code>interaction.depth</code>, <code>n.trees</code> and <code>shrinkage</code> which are usually contained in <code>tuneGrid</code> parameter of <code>train</code> function) were compared using a repeated 10-fold cross validation with accuracy being the metric for comparison.</p>
 <p>Following is the result model. (It is also interesting to see the variable importance using <code>summary(gbmFit)</code>. But for the sake of space we do not show it here.)</p>
 <pre class="r"><code>gbmFit</code></pre>
